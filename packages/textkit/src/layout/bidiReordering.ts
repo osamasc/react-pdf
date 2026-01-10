@@ -66,19 +66,23 @@ const reorderLine = (line: AttributedString) => {
     const updatedPositions = [];
 
     const addedGlyphs = new Set();
+    const lastLigatureIndex = new Map();
 
     for (let i = 0; i < selectedIndices.length; i += 1) {
       const index = selectedIndices[i];
 
       const glyph = getItemAtIndex(line.runs, 'glyphs', index);
 
-      if (addedGlyphs.has(glyph.id)) continue;
+      if (addedGlyphs.has(glyph.id) && lastLigatureIndex.get(glyph.id) === index + 1) {
+        continue;
+      }
 
       updatedGlyphs.push(glyph);
       updatedPositions.push(getItemAtIndex(line.runs, 'positions', index));
 
       if (glyph.isLigature) {
         addedGlyphs.add(glyph.id);
+        lastLigatureIndex.set(glyph.id, index);
       }
     }
 
